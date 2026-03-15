@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Google Fonts - Noto Sans TC for Traditional Chinese */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -43,39 +46,43 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
+  /* Medical Professional Color Palette */
+  --primary: oklch(0.475 0.197 259.815); /* Medical Blue #0066CC */
+  --primary-foreground: oklch(0.98 0.001 286.375); /* Light Blue Background */
+  --sidebar-primary: oklch(0.475 0.197 259.815);
+  --sidebar-primary-foreground: oklch(0.98 0.001 286.375);
+  
+  /* Success & Warning Colors */
+  --chart-1: oklch(0.65 0.15 142); /* Success Green */
+  --chart-2: oklch(0.475 0.197 259.815); /* Medical Blue */
+  --chart-3: oklch(0.6 0.2 25); /* Warning Red */
+  --chart-4: oklch(0.475 0.197 259.815);
+  --chart-5: oklch(0.4 0.15 259.815);
+  
+  --radius: 0.5rem; /* 8px rounded corners */
+  --background: oklch(1 0 0); /* White */
+  --foreground: oklch(0.235 0.015 65); /* Dark Gray */
+  --card: oklch(1 0 0); /* White */
   --card-foreground: oklch(0.235 0.015 65);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
+  --secondary: oklch(0.96 0.002 286.375); /* Light Gray */
+  --secondary-foreground: oklch(0.35 0.015 65);
+  --muted: oklch(0.94 0.002 286.375); /* Muted Gray */
   --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
+  --accent: oklch(0.475 0.197 259.815); /* Medical Blue */
+  --accent-foreground: oklch(0.98 0.001 286.375);
+  --destructive: oklch(0.6 0.2 25); /* Red for fail states */
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0.004 286.32); /* Light border */
+  --input: oklch(0.98 0.001 286.375); /* White input */
+  --ring: oklch(0.475 0.197 259.815); /* Blue focus ring */
+  --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-accent: oklch(0.475 0.197 259.815);
+  --sidebar-accent-foreground: oklch(0.98 0.001 286.375);
   --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --sidebar-ring: oklch(0.475 0.197 259.815);
 }
 
 .dark {
@@ -117,8 +124,35 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  
+  /* Typography System */
+  h1 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+  
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-xl font-semibold;
+  }
+  
+  h4 {
+    @apply text-lg font-semibold;
+  }
+  
+  p {
+    @apply text-base font-normal leading-relaxed;
+  }
+  
+  small {
+    @apply text-sm font-normal;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

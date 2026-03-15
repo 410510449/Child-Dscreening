@@ -12,6 +12,12 @@ export interface ChildInfo {
   birthDate: string; // YYYY-MM-DD (民國年轉換)
   testDate: string; // YYYY-MM-DD (民國年轉換)
   gender?: 'M' | 'F';
+  eatingTime?: string; // 是/否
+  eatingTimeDetail?: string; // 詳細說明
+  developmentConcern?: string; // 是/否
+  developmentConcernDetail?: string; // 詳細說明
+  behaviorConcern?: string; // 是/否
+  behaviorConcernDetail?: string; // 詳細說明
 }
 
 export interface QuestionAnswer {

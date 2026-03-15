@@ -4,7 +4,7 @@
  */
 
 import { ChildInfo } from '@/contexts/QuestionnaireContext';
-import { AgeGroup } from '@/lib/questionnaire-data';
+import { AgeGroup, getAgeGroupData } from '@/lib/questionnaire-data';
 
 interface ExportData {
   childInfo: ChildInfo;
@@ -24,6 +24,7 @@ interface ExportData {
     partialPass: boolean;
   };
   therapyRecommendation: 'regular' | 'followup' | 'referral' | null;
+  answers?: Map<string, { score: number }>;
 }
 
 /**
@@ -298,6 +299,8 @@ function generateHTMLContent(data: ExportData): string {
         </table>
       </div>
 
+      ${generateDetailedQuestionsHTML(data)}
+
       <div class="section">
         <div class="section-title">評估結論</div>
         <div class="result-box">
@@ -315,8 +318,48 @@ function generateHTMLContent(data: ExportData): string {
       <div class="footer">
         <p>劉氏工作室 製作 2026.03.15</p>
         <p>本報告僅供參考，具體診斷與治療建議請諮詢專業醫療人員</p>
+        <p>頁尾</p>
       </div>
     </body>
     </html>
   `;
+}
+
+
+/**
+ * 生成詳細問卷內容的 HTML
+ */
+function generateDetailedQuestionsHTML(data: ExportData): string {
+  const { ageGroup, answers } = data;
+  const ageData = getAgeGroupData(ageGroup);
+  
+  const areas = ['gross', 'fine', 'cognitive', 'social'];
+  const areaNames: Record<string, string> = {
+    gross: '粗大動作',
+    fine: '精細動作',
+    cognitive: '認知語言',
+    social: '社會發展',
+  };
+
+  let html = '<div style="page-break-before: always; margin-top: 30px;">';
+  html += '<div class="section"><div class="section-title">詳細問卷回答</div>';
+
+  areas.forEach((area) => {
+    const areaData = ageData.areas[area as keyof typeof ageData.areas];
+    html += '<div style="margin-bottom: 20px;">';
+    html += `<h3 style="color: #0066cc; font-size: 16px; margin: 15px 0 10px 0;">${areaNames[area]}</h3>`;
+    html += '<table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">';
+    html += '<thead><tr style="background: #e8f2ff;"><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">題號</th><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">題目</th><th style="border: 1px solid #ddd; padding: 8px; text-align: center;">得分</th></tr></thead>';
+    html += '<tbody>';
+
+    areaData.questions.forEach((q) => {
+      const score = answers?.get(q.id)?.score ?? '-';
+      html += `<tr><td style="border: 1px solid #ddd; padding: 8px;">${q.number}</td><td style="border: 1px solid #ddd; padding: 8px;">${q.description}</td><td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${score}</td></tr>`;
+    });
+
+    html += '</tbody></table></div>';
+  });
+
+  html += '</div></div>';
+  return html;
 }

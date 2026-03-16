@@ -1545,7 +1545,7 @@ export function calculateAgeInMonths(birthDateROC: string, testDateROC: string):
 }
 
 export function formatAge(months: number): string {
-  if (months < 24) {
+  if (months <= 24) {
     return `${months} 個月`;
   } else {
     const years = Math.floor(months / 12);
@@ -1553,7 +1553,7 @@ export function formatAge(months: number): string {
     if (remainingMonths === 0) {
       return `${years} 歲`;
     } else {
-      return `${years} 歲 ${remainingMonths} 個月`;
+      return `${years} 歲`;
     }
   }
 }

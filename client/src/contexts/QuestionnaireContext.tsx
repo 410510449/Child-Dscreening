@@ -4,20 +4,18 @@
  */
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { AgeGroup } from '@/lib/questionnaire-data';
+import { AgeGroup } from '@/lib/questionnaire-data-v2';
 
 export interface ChildInfo {
   name: string;
   idNumber: string; // 可選
-  birthDate: string; // YYYY-MM-DD (民國年轉換)
-  testDate: string; // YYYY-MM-DD (民國年轉換)
+  birthDate: string; // 民國年格式：110-03-15
+  testDate: string; // 民國年格式：115-03-15
   gender?: 'M' | 'F';
   eatingTime?: string; // 是/否
-  eatingTimeDetail?: string; // 詳細說明
   developmentConcern?: string; // 是/否
-  developmentConcernDetail?: string; // 詳細說明
   behaviorConcern?: string; // 是/否
-  behaviorConcernDetail?: string; // 詳細說明
+  ageInMonths?: number; // 計算得出的年齡（月份）
 }
 
 export interface QuestionAnswer {

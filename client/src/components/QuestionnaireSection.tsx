@@ -12,15 +12,20 @@ import { useQuestionnaire } from '@/contexts/QuestionnaireContext';
 interface QuestionnaireSectionProps {
   areaName: string;
   questions: Question[];
+  maxScore: number;
   onScoresChange?: (scores: Record<string, number>) => void;
 }
 
 export default function QuestionnaireSection({
   areaName,
   questions,
+  maxScore,
   onScoresChange,
 }: QuestionnaireSectionProps) {
   const { getAnswer, setAnswer } = useQuestionnaire();
+
+  // 生成評分選項（0 到 maxScore）
+  const scoreOptions = Array.from({ length: maxScore + 1 }, (_, i) => i);
 
   const handleScoreSelect = (questionId: string, score: number) => {
     setAnswer(questionId, score);
@@ -70,7 +75,7 @@ export default function QuestionnaireSection({
               {/* 評分選項 */}
               <div className="mt-6 space-y-3">
                 <div className="flex gap-2 flex-wrap">
-                  {question.scoreOptions.map((score) => (
+                  {scoreOptions.map((score: number) => (
                     <Button
                       key={`${question.id}-${score}`}
                       onClick={() => handleScoreSelect(question.id, score)}

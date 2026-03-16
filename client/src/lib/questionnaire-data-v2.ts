@@ -1,35 +1,36 @@
 /**
- * 兒童發展篩檢問卷 - 資料結構（版本 2）
- * 支援 9 個年齡集合：6-9、9-12、12-15、15-18、18-24、2-3、3-4、4-5、5-7
+ * 兒童發展篩檢問卷資料結構 - 版本 2
+ * 支援 9 個年齡集合（6-9個月、9-12個月、12-15個月、15-18個月、18-24個月、2-3歲、3-4歲、4-5歲、5-7歲）
  */
 
 export type AgeGroup = '6-9' | '9-12' | '12-15' | '15-18' | '18-24' | '2-3' | '3-4' | '4-5' | '5-7';
-export type DevelopmentArea = 'gross' | 'fine' | 'cognitive' | 'social';
 
 export interface Question {
   id: string;
   number: number;
   description: string;
+  scoreOptions: number[];
   passStandard: string;
   failStandard: string;
 }
 
-export interface DevelopmentAreaData {
+export interface DevelopmentArea {
   name: string;
   questions: Question[];
-  cutoffPass: number;
   maxScore: number;
+  cutoffPass: number;
 }
 
 export interface AgeGroupData {
   name: string;
   minMonths: number;
   maxMonths: number;
+  displayFormat: 'months' | 'years'; // 24個月以下顯示月份，以上顯示年齡
   areas: {
-    gross: DevelopmentAreaData;
-    fine: DevelopmentAreaData;
-    cognitive: DevelopmentAreaData;
-    social: DevelopmentAreaData;
+    gross: DevelopmentArea;
+    fine: DevelopmentArea;
+    cognitive: DevelopmentArea;
+    social: DevelopmentArea;
   };
 }
 
@@ -97,30 +98,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '6-9 個月',
     minMonths: 6,
     maxMonths: 9,
+    displayFormat: 'months',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 5,
         maxScore: 6,
+        cutoffPass: 5,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       cognitive: {
         name: '認知語言社會發展',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       social: {
         name: '認知語言社會發展',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
     },
   },
@@ -128,30 +130,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '9-12 個月',
     minMonths: 9,
     maxMonths: 12,
+    displayFormat: 'months',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
     },
   },
@@ -159,30 +162,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '12-15 個月',
     minMonths: 12,
     maxMonths: 15,
+    displayFormat: 'months',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
     },
   },
@@ -190,30 +194,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '15-18 個月',
     minMonths: 15,
     maxMonths: 18,
+    displayFormat: 'months',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
     },
   },
@@ -221,30 +226,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '18-24 個月',
     minMonths: 18,
     maxMonths: 24,
+    displayFormat: 'months',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 5,
         maxScore: 6,
+        cutoffPass: 5,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
     },
   },
@@ -252,30 +258,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '2-3 歲',
     minMonths: 24,
     maxMonths: 36,
+    displayFormat: 'years',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
     },
   },
@@ -283,30 +290,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '3-4 歲',
     minMonths: 36,
     maxMonths: 48,
+    displayFormat: 'years',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 2,
         maxScore: 3,
+        cutoffPass: 2,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
     },
   },
@@ -314,30 +322,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '4-5 歲',
     minMonths: 48,
     maxMonths: 60,
+    displayFormat: 'years',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
     },
   },
@@ -345,30 +354,31 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     name: '5-7 歲',
     minMonths: 60,
     maxMonths: 84,
+    displayFormat: 'years',
     areas: {
       gross: {
         name: '粗大動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       fine: {
         name: '精細動作',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
       cognitive: {
         name: '認知語言',
         questions: [],
-        cutoffPass: 4,
         maxScore: 5,
+        cutoffPass: 4,
       },
       social: {
         name: '社會發展',
         questions: [],
-        cutoffPass: 3,
         maxScore: 4,
+        cutoffPass: 3,
       },
     },
   },
@@ -452,11 +462,4 @@ export function calculateAgeInMonths(birthDate: string, testDate: string): numbe
   }
 
   return Math.max(0, months);
-}
-
-/**
- * 獲取評估結果量表
- */
-export function getAssessmentTable(ageGroup: AgeGroup): Record<string, { cutoff: number; maxScore: number }> {
-  return ASSESSMENT_TABLES[ageGroup];
 }

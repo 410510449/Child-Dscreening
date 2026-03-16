@@ -1,6 +1,6 @@
 /**
- * 基本資料頁面
- * 收集兒童基本資訊：姓名、身份證號、出生日期、施測日期
+ * 基本資料登錄頁面
+ * 收集兒童基本資訊：姓名、身份證號、出生日期、施測日期、三個照護問題
  */
 
 import React, { useState, useEffect } from 'react';
@@ -11,9 +11,8 @@ import { Card } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { useQuestionnaire } from '@/contexts/QuestionnaireContext';
 import { validateTaiwaneseID } from '@/lib/id-validation';
-import { calculateAgeGroup } from '@/lib/questionnaire-data';
+import { getAgeGroupByMonths, calculateAgeInMonths, formatAge } from '@/lib/questionnaire-data';
 import DatePickerButton from '@/components/DatePickerButton';
-import { parseROCDate, formatROCDate, calculateAgeInMonths } from '@/lib/date-utils';
 
 interface BasicInfoPageProps {
   onNext: () => void;
@@ -24,88 +23,43 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
   
   const [name, setName] = useState(state.childInfo?.name || '');
   const [idNumber, setIdNumber] = useState(state.childInfo?.idNumber || '');
-  const [birthDateROC, setBirthDateROC] = useState('');
-  const [birthDateAD, setBirthDateAD] = useState(state.childInfo?.birthDate || '');
-  const [testDateROC, setTestDateROC] = useState('');
-  const [testDateAD, setTestDateAD] = useState(state.childInfo?.testDate || getTodayAD());
+  const [birthDateROC, setBirthDateROC] = useState(state.childInfo?.birthDate || '');
+  const [testDateROC, setTestDateROC] = useState(state.childInfo?.testDate || getTodayROC());
   const [gender, setGender] = useState<'M' | 'F' | ''>(state.childInfo?.gender || '');
-  const [eatingTime, setEatingTime] = useState('');
-  const [eatingTimeDetail, setEatingTimeDetail] = useState('');
-  const [developmentConcern, setDevelopmentConcern] = useState('');
-  const [developmentConcernDetail, setDevelopmentConcernDetail] = useState('');
-  const [behaviorConcern, setBehaviorConcern] = useState('');
-  const [behaviorConcernDetail, setBehaviorConcernDetail] = useState('');
+  
+  // 三個照護問題
+  const [eatingTime, setEatingTime] = useState(state.childInfo?.eatingTime || '');
+  const [developmentConcern, setDevelopmentConcern] = useState(state.childInfo?.developmentConcern || '');
+  const [behaviorConcern, setBehaviorConcern] = useState(state.childInfo?.behaviorConcern || '');
+  
   const [ageMonths, setAgeMonths] = useState<number | null>(null);
+  const [ageDisplay, setAgeDisplay] = useState<string>('');
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [idError, setIdError] = useState('');
 
-  // 初始化日期顯示
-  useEffect(() => {
-    if (birthDateAD) {
-      setBirthDateROC(convertADtoROC(birthDateAD));
-    }
-    if (testDateAD) {
-      setTestDateROC(convertADtoROC(testDateAD));
-    }
-  }, []);
-
-  // 取得今天日期 (AD 格式)
-  function getTodayAD(): string {
+  // 取得今天日期 (民國年格式)
+  function getTodayROC(): string {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    const year = today.getFullYear() - 1911;
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
-  // AD 年份轉民國
-  function convertADtoROC(dateStr: string): string {
-    if (!dateStr) return '';
-    const [year, month, day] = dateStr.split('-');
-    const rocYear = parseInt(year) - 1911;
-    return `${rocYear}-${month}-${day}`;
-  }
-
-  // 民國轉 AD 年份
-  function convertROCtoAD(rocDateStr: string): string {
-    if (!rocDateStr) return '';
-    const [rocYear, month, day] = rocDateStr.split('-');
-    const adYear = parseInt(rocYear) + 1911;
-    return `${adYear}-${month}-${day}`;
-  }
-
-  // 處理出生日期民國輸入
-  const handleBirthDateROCChange = (value: string) => {
-    setBirthDateROC(value);
-    if (value) {
-      const adDate = convertROCtoAD(value);
-      setBirthDateAD(adDate);
-    }
-  };
-
-  // 處理施測日期民國輸入
-  const handleTestDateROCChange = (value: string) => {
-    setTestDateROC(value);
-    if (value) {
-      const adDate = convertROCtoAD(value);
-      setTestDateAD(adDate);
-      // 自動計算年齡
-      if (birthDateAD) {
-        const birthDate = new Date(birthDateAD);
-        const testDate = new Date(adDate);
-        const months = calculateAgeInMonths(birthDate, testDate);
+  // 計算年齡
+  useEffect(() => {
+    if (birthDateROC && testDateROC) {
+      try {
+        const months = calculateAgeInMonths(birthDateROC, testDateROC);
         setAgeMonths(months);
+        setAgeDisplay(formatAge(months));
+      } catch (e) {
+        setAgeMonths(null);
+        setAgeDisplay('');
       }
     }
-  };
-
-  // 處理出生日期變更時計算年齡
-  useEffect(() => {
-    if (birthDateAD && testDateAD) {
-      const birthDate = new Date(birthDateAD);
-      const testDate = new Date(testDateAD);
-      const months = calculateAgeInMonths(birthDate, testDate);
-      setAgeMonths(months);
-    }
-  }, [birthDateAD, testDateAD]);
+  }, [birthDateROC, testDateROC]);
 
   // 驗證身份證號
   const handleIdChange = (value: string) => {
@@ -130,11 +84,11 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
       newErrors.name = '請輸入兒童姓名';
     }
 
-    if (!birthDateAD) {
+    if (!birthDateROC) {
       newErrors.birthDate = '請輸入出生日期';
     }
 
-    if (!testDateAD) {
+    if (!testDateROC) {
       newErrors.testDate = '請輸入施測日期';
     }
 
@@ -152,25 +106,29 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
       return;
     }
 
-    const birthDate = new Date(birthDateAD);
-    const testDate = new Date(testDateAD);
-    const ageGroup = calculateAgeGroup(birthDate, testDate);
+    if (!ageMonths) {
+      alert('無法計算年齡，請檢查日期');
+      return;
+    }
+
+    const ageGroup = getAgeGroupByMonths(ageMonths);
 
     setChildInfo({
       name: name.trim(),
       idNumber: idNumber.trim(),
-      birthDate: birthDateAD,
-      testDate: testDateAD,
+      birthDate: birthDateROC,
+      testDate: testDateROC,
       gender: gender as 'M' | 'F' | undefined,
       eatingTime,
-      eatingTimeDetail,
       developmentConcern,
-      developmentConcernDetail,
       behaviorConcern,
-      behaviorConcernDetail,
+      ageInMonths: ageMonths,
     });
 
-    setAgeGroup(ageGroup);
+    if (ageGroup) {
+      setAgeGroup(ageGroup);
+    }
+
     onNext();
   };
 
@@ -274,13 +232,13 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
                     type="text"
                     placeholder="例：110-03-15"
                     value={birthDateROC}
-                    onChange={(e) => handleBirthDateROCChange(e.target.value)}
+                    onChange={(e) => setBirthDateROC(e.target.value)}
                     className="text-lg h-12"
                   />
                 </div>
                 <DatePickerButton
                   value={birthDateROC}
-                  onChange={handleBirthDateROCChange}
+                  onChange={setBirthDateROC}
                   placeholder="選擇日期"
                 />
               </div>
@@ -307,13 +265,13 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
                     type="text"
                     placeholder="例：115-03-15"
                     value={testDateROC}
-                    onChange={(e) => handleTestDateROCChange(e.target.value)}
+                    onChange={(e) => setTestDateROC(e.target.value)}
                     className="text-lg h-12"
                   />
                 </div>
                 <DatePickerButton
                   value={testDateROC}
-                  onChange={handleTestDateROCChange}
+                  onChange={setTestDateROC}
                   placeholder="選擇日期"
                 />
               </div>
@@ -324,136 +282,115 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
                 </div>
               )}
               <p className="text-xs text-gray-500 mt-1">
-                格式：民國年-月-日（預填今天）
+                格式：民國年-月-日（例：115-03-15）
               </p>
-              {ageMonths !== null && (
-                <p className="text-xs text-blue-600 mt-1 font-semibold">
-                  年齡：{ageMonths} 個月
+            </div>
+
+            {/* 年齡顯示 */}
+            {ageDisplay && (
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-lg font-semibold text-blue-900">
+                  計算年齡：{ageDisplay}
                 </p>
-              )}
-            </div>
-
-            {/* 分隔線 */}
-            <div className="border-t-2 border-gray-200 my-6"></div>
-
-            {/* 近期照護情形 - 問題 1 */}
-            <div>
-              <Label className="text-base font-semibold text-gray-900">
-                請問孩子吃飯/喝奶是否需要超過半小時？
-              </Label>
-              <div className="flex gap-4 mt-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="eatingTime"
-                    value="yes"
-                    checked={eatingTime === 'yes'}
-                    onChange={(e) => setEatingTime(e.target.value)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-gray-700">是</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="eatingTime"
-                    value="no"
-                    checked={eatingTime === 'no'}
-                    onChange={(e) => setEatingTime(e.target.value)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-gray-700">否</span>
-                </label>
               </div>
-              {eatingTime === 'yes' && (
-                <Input
-                  type="text"
-                  placeholder="請詳細說明"
-                  value={eatingTimeDetail}
-                  onChange={(e) => setEatingTimeDetail(e.target.value)}
-                  className="mt-2 text-sm"
-                />
-              )}
-            </div>
+            )}
 
-            {/* 近期照護情形 - 問題 2 */}
-            <div>
-              <Label className="text-base font-semibold text-gray-900">
-                請問您覺得孩子在動作、語言、認知、情緒互動或自我照顧的發展有比同齡孩子落後嗎？
-              </Label>
-              <div className="flex gap-4 mt-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="developmentConcern"
-                    value="yes"
-                    checked={developmentConcern === 'yes'}
-                    onChange={(e) => setDevelopmentConcern(e.target.value)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-gray-700">是</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="developmentConcern"
-                    value="no"
-                    checked={developmentConcern === 'no'}
-                    onChange={(e) => setDevelopmentConcern(e.target.value)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-gray-700">否</span>
-                </label>
-              </div>
-              {developmentConcern === 'yes' && (
-                <Input
-                  type="text"
-                  placeholder="請詳細說明"
-                  value={developmentConcernDetail}
-                  onChange={(e) => setDevelopmentConcernDetail(e.target.value)}
-                  className="mt-2 text-sm"
-                />
-              )}
-            </div>
+            {/* 三個照護問題 */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">近期照護情形</h3>
 
-            {/* 近期照護情形 - 問題 3 */}
-            <div>
-              <Label className="text-base font-semibold text-gray-900">
-                請問您孩子在家或在校是否有活動會過大、衝動、或注意力短暫等問題？
-              </Label>
-              <div className="flex gap-4 mt-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="behaviorConcern"
-                    value="yes"
-                    checked={behaviorConcern === 'yes'}
-                    onChange={(e) => setBehaviorConcern(e.target.value)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-gray-700">是</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="behaviorConcern"
-                    value="no"
-                    checked={behaviorConcern === 'no'}
-                    onChange={(e) => setBehaviorConcern(e.target.value)}
-                    className="w-4 h-4"
-                  />
-                  <span className="text-gray-700">否</span>
-                </label>
+              {/* 問題 1 */}
+              <div className="mb-4">
+                <Label className="text-base font-semibold text-gray-900">
+                  吃飯/喝奶是否超過半小時？
+                </Label>
+                <div className="flex gap-4 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="eatingTime"
+                      value="yes"
+                      checked={eatingTime === 'yes'}
+                      onChange={(e) => setEatingTime(e.target.value)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700">是</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="eatingTime"
+                      value="no"
+                      checked={eatingTime === 'no'}
+                      onChange={(e) => setEatingTime(e.target.value)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700">否</span>
+                  </label>
+                </div>
               </div>
-              {behaviorConcern === 'yes' && (
-                <Input
-                  type="text"
-                  placeholder="請詳細說明"
-                  value={behaviorConcernDetail}
-                  onChange={(e) => setBehaviorConcernDetail(e.target.value)}
-                  className="mt-2 text-sm"
-                />
-              )}
+
+              {/* 問題 2 */}
+              <div className="mb-4">
+                <Label className="text-base font-semibold text-gray-900">
+                  發展是否比同齡慢？
+                </Label>
+                <div className="flex gap-4 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="developmentConcern"
+                      value="yes"
+                      checked={developmentConcern === 'yes'}
+                      onChange={(e) => setDevelopmentConcern(e.target.value)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700">是</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="developmentConcern"
+                      value="no"
+                      checked={developmentConcern === 'no'}
+                      onChange={(e) => setDevelopmentConcern(e.target.value)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700">否</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* 問題 3 */}
+              <div className="mb-4">
+                <Label className="text-base font-semibold text-gray-900">
+                  是否有活動量過大、衝動、注意力短暫？
+                </Label>
+                <div className="flex gap-4 mt-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="behaviorConcern"
+                      value="yes"
+                      checked={behaviorConcern === 'yes'}
+                      onChange={(e) => setBehaviorConcern(e.target.value)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700">是</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="behaviorConcern"
+                      value="no"
+                      checked={behaviorConcern === 'no'}
+                      onChange={(e) => setBehaviorConcern(e.target.value)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700">否</span>
+                  </label>
+                </div>
+              </div>
             </div>
 
             {/* 提交按鈕 */}
@@ -461,18 +398,13 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
               <Button
                 type="button"
                 onClick={handleSubmit}
-                className="flex-1 h-12 text-lg bg-blue-600 hover:bg-blue-700 text-white"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-lg"
               >
-                開始問卷
+                繼續評量
               </Button>
             </div>
           </form>
         </Card>
-
-        {/* 頁尾 */}
-        <div className="text-center mt-12 text-gray-500 text-sm">
-          劉氏工作室 製作 2026.03.15
-        </div>
       </div>
     </div>
   );

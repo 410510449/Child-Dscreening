@@ -65,6 +65,7 @@ export default function QuestionnairePage({
           <QuestionnaireSection
             areaName={areaNames[area]}
             questions={areaData.questions}
+            maxScore={areaData.maxScore}
             onScoresChange={onScoresCalculated}
           />
         </Card>
@@ -76,7 +77,7 @@ export default function QuestionnairePage({
               <span className="font-semibold">通過標準：</span> 總分 ≥ {areaData.cutoffPass}
             </p>
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">不通過標準：</span> 總分 &lt; {areaData.cutoffFail}
+              <span className="font-semibold">不通過標準：</span> 總分 &lt; {areaData.cutoffPass}
             </p>
             <p className="text-sm text-gray-600">
               <span className="font-semibold">最高分數：</span> {areaData.maxScore}

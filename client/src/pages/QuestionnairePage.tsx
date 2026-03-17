@@ -56,7 +56,7 @@ export default function QuestionnairePage({
             {areaNames[area]}
           </h1>
           <p className="text-gray-600">
-            年齡層：{state.ageGroup ? `${state.ageGroup} 個月` : '未知'}
+            年齡層：{state.ageGroup ? getAgeGroupData(state.ageGroup).name : '未知'}
           </p>
         </div>
 

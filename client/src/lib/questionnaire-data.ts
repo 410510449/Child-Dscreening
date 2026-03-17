@@ -1046,7 +1046,7 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     },
   },
   '3-4': {
-    name: '3-4 歲',
+    name: '3-4 個月',
     minMonths: 36,
     maxMonths: 48,
     areas: {
@@ -1200,7 +1200,7 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     },
   },
   '4-5': {
-    name: '4-5 歲',
+    name: '4-5 個月',
     minMonths: 48,
     maxMonths: 60,
     areas: {
@@ -1354,7 +1354,7 @@ const QUESTIONNAIRE_DATA: Record<AgeGroup, AgeGroupData> = {
     },
   },
   '5-7': {
-    name: '5-7 歲',
+    name: '5-7 個月',
     minMonths: 60,
     maxMonths: 84,
     areas: {

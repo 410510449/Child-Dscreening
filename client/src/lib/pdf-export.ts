@@ -81,8 +81,10 @@ export async function exportToPDF(data: ExportData): Promise<void> {
       heightLeft -= 297;
     }
 
-    // 生成檔名
-    const fileName = `${data.childInfo.name}_${data.childInfo.testDate}.pdf`;
+    // 生成檔名（格式：施測日期(西元年)+兒童姓名）
+    const testDateObj = new Date(data.childInfo.testDate);
+    const testDateWestern = testDateObj.getFullYear();
+    const fileName = `${testDateWestern}-${String(testDateObj.getMonth() + 1).padStart(2, '0')}-${String(testDateObj.getDate()).padStart(2, '0')}_${data.childInfo.name}.pdf`;
 
     // 下載 PDF
     pdf.save(fileName);
@@ -316,9 +318,8 @@ function generateHTMLContent(data: ExportData): string {
       </div>
 
       <div class="footer">
-        <p>劉氏工作室 製作 2026.03.15</p>
+        <p>懷生小兒科診所劉醫師 製作 2026.03.16</p>
         <p>本報告僅供參考，具體診斷與治療建議請諮詢專業醫療人員</p>
-        <p>頁尾</p>
       </div>
     </body>
     </html>

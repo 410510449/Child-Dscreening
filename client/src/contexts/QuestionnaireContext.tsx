@@ -13,8 +13,11 @@ export interface ChildInfo {
   testDate: string; // 民國年格式：115-03-15
   gender?: 'M' | 'F';
   eatingTime?: string; // 是/否
+  eatingTimeDescription?: string; // 吃飯/喝奶描述
   developmentConcern?: string; // 是/否
+  developmentConcernDescription?: string; // 發展遲緩描述
   behaviorConcern?: string; // 是/否
+  behaviorConcernDescription?: string; // 行為問題描述
   ageInMonths?: number; // 計算得出的年齡（月份）
 }
 

@@ -29,8 +29,11 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
   
   // 三個照護問題
   const [eatingTime, setEatingTime] = useState(state.childInfo?.eatingTime || '');
+  const [eatingTimeDescription, setEatingTimeDescription] = useState(state.childInfo?.eatingTimeDescription || '');
   const [developmentConcern, setDevelopmentConcern] = useState(state.childInfo?.developmentConcern || '');
+  const [developmentConcernDescription, setDevelopmentConcernDescription] = useState(state.childInfo?.developmentConcernDescription || '');
   const [behaviorConcern, setBehaviorConcern] = useState(state.childInfo?.behaviorConcern || '');
+  const [behaviorConcernDescription, setBehaviorConcernDescription] = useState(state.childInfo?.behaviorConcernDescription || '');
   
   const [ageMonths, setAgeMonths] = useState<number | null>(null);
   const [ageDisplay, setAgeDisplay] = useState<string>('');
@@ -120,8 +123,11 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
       testDate: testDateROC,
       gender: gender as 'M' | 'F' | undefined,
       eatingTime,
+      eatingTimeDescription,
       developmentConcern,
+      developmentConcernDescription,
       behaviorConcern,
+      behaviorConcernDescription,
       ageInMonths: ageMonths,
     });
 
@@ -328,6 +334,19 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
                     <span className="text-gray-700">否</span>
                   </label>
                 </div>
+                {eatingTime === 'yes' && (
+                  <div className="mt-3">
+                    <Input
+                      type="text"
+                      placeholder="請描述"
+                      value={eatingTimeDescription}
+                      onChange={(e) => setEatingTimeDescription(e.target.value.slice(0, 60))}
+                      className="text-sm h-10"
+                      maxLength={60}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{eatingTimeDescription.length}/60 bytes</p>
+                  </div>
+                )}
               </div>
 
               {/* 問題 2 */}
@@ -359,6 +378,19 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
                     <span className="text-gray-700">否</span>
                   </label>
                 </div>
+                {developmentConcern === 'yes' && (
+                  <div className="mt-3">
+                    <Input
+                      type="text"
+                      placeholder="請描述"
+                      value={developmentConcernDescription}
+                      onChange={(e) => setDevelopmentConcernDescription(e.target.value.slice(0, 60))}
+                      className="text-sm h-10"
+                      maxLength={60}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{developmentConcernDescription.length}/60 bytes</p>
+                  </div>
+                )}
               </div>
 
               {/* 問題 3 */}
@@ -390,6 +422,19 @@ export default function BasicInfoPage({ onNext }: BasicInfoPageProps) {
                     <span className="text-gray-700">否</span>
                   </label>
                 </div>
+                {behaviorConcern === 'yes' && (
+                  <div className="mt-3">
+                    <Input
+                      type="text"
+                      placeholder="請描述"
+                      value={behaviorConcernDescription}
+                      onChange={(e) => setBehaviorConcernDescription(e.target.value.slice(0, 60))}
+                      className="text-sm h-10"
+                      maxLength={60}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{behaviorConcernDescription.length}/60 bytes</p>
+                  </div>
+                )}
               </div>
             </div>
 
